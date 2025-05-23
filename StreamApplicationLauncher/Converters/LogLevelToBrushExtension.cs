@@ -1,12 +1,18 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Markup;
 using System.Windows.Media;
 using StreamApplicationLauncher.Models;
 
 namespace StreamApplicationLauncher.Converters;
 
-public class LogLevelToBrushConverter : IValueConverter {
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
+[MarkupExtensionReturnType(typeof(Brush))]
+public class LogLevelToBrushExtension : MarkupExtension, IValueConverter {
+    private static readonly LogLevelToBrushExtension _instance = new();
+
+    public override object ProvideValue(IServiceProvider serviceProvider) => _instance;
+
+    public object? Convert(object value, Type targetType, object parameter, CultureInfo culture) {
         return value switch {
             LogLevel.Trace => Brushes.LightSlateGray,
             LogLevel.Debug => Brushes.Gray,
@@ -18,7 +24,6 @@ public class LogLevelToBrushConverter : IValueConverter {
         };
     }
 
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) {
-        return Binding.DoNothing;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => Binding.DoNothing;
 }

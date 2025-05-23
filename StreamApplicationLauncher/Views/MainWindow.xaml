@@ -12,12 +12,6 @@
         d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel, IsDesignTimeCreatable=True}"
         Title="MainWindow" Height="450" Width="800">
 
-    <Window.Resources>
-        <conv:LogLevelToBrushConverter x:Key="LogLevelToBrushConverter" />
-        <conv:LogLevelToBackgroundBrushConverter x:Key="LogLevelToBackgroundBrushConverter" />
-
-    </Window.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -46,7 +40,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:LogMessage}">
                     <Grid Margin="0,2"
-                          Background="{Binding Level, Converter={StaticResource LogLevelToBackgroundBrushConverter}}"
+                          Background="{Binding Level, Converter={conv:LogLevelToBackgroundBrush}}"
                           HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" /> <!-- Timestamp -->
@@ -70,13 +64,13 @@
 
                             <TextBlock Grid.Column="0"
                                        Text="["
-                                       Foreground="{Binding Level, Converter={StaticResource LogLevelToBrushConverter}}"
+                                       Foreground="{Binding Level, Converter={conv:LogLevelToBrush}}"
                                        FontWeight="Bold"
                                        VerticalAlignment="Center" />
 
                             <TextBlock Grid.Column="1"
                                        Text="{Binding Level}"
-                                       Foreground="{Binding Level, Converter={StaticResource LogLevelToBrushConverter}}"
+                                       Foreground="{Binding Level, Converter={conv:LogLevelToBrush}}"
                                        FontWeight="Bold"
                                        TextAlignment="Center"
                                        HorizontalAlignment="Stretch"
@@ -84,7 +78,7 @@
 
                             <TextBlock Grid.Column="2"
                                        Text="]"
-                                       Foreground="{Binding Level, Converter={StaticResource LogLevelToBrushConverter}}"
+                                       Foreground="{Binding Level, Converter={conv:LogLevelToBrush}}"
                                        FontWeight="Bold"
                                        VerticalAlignment="Center" />
                         </Grid>
