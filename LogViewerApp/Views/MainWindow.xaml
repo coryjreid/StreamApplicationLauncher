@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:LogViewerApp.Converters"
         xmlns:vm="clr-namespace:LogViewerApp.ViewModels"
+        xmlns:behaviors="clr-namespace:LogViewerApp.Behaviors"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=True}"
         Title="MainWindow" Height="450" Width="800">
@@ -19,6 +21,10 @@
                  ScrollViewer.CanContentScroll="True"
                  VirtualizingStackPanel.IsVirtualizing="True"
                  VirtualizingStackPanel.VirtualizationMode="Standard">
+
+            <b:Interaction.Behaviors>
+                <behaviors:AutoScrollBehavior />
+            </b:Interaction.Behaviors>
 
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
