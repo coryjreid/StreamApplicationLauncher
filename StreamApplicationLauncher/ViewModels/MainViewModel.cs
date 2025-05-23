@@ -10,10 +10,9 @@ namespace StreamApplicationLauncher.ViewModels;
 
 public class MainViewModel : INotifyPropertyChanged {
     public ObservableCollection<LogMessage> LogMessages { get; }
-    public ScrollState ScrollState { get; } = new ScrollState();
+    public ScrollState ScrollState { get; } = new();
     public ICommand ScrollToBottomCommand { get; }
     public string DurationText => _runtimeTimer.DurationText;
-    private readonly LogManager _logManager;
     private readonly IRuntimeTimer _runtimeTimer;
 
     // Design-time constructor
@@ -23,14 +22,15 @@ public class MainViewModel : INotifyPropertyChanged {
 
     // Runtime constructor
     public MainViewModel(LogManager logManager, IRuntimeTimer runtimeTimer) {
-        _logManager = logManager;
         _runtimeTimer = runtimeTimer;
 
         LogMessages = logManager.LogMessages;
         ScrollToBottomCommand = new RelayCommand(ExecuteScrollToBottom, CanScrollToBottom);
+
         ScrollState.PropertyChanged += (_, _) => { (ScrollToBottomCommand as RelayCommand)?.RaiseCanExecuteChanged(); };
+
         _runtimeTimer.PropertyChanged += (_, args) => {
-            if (args.PropertyName == nameof(RuntimeTimer.DurationText)) {
+            if (args.PropertyName == nameof(DurationText)) {
                 OnPropertyChanged(nameof(DurationText));
             }
         };

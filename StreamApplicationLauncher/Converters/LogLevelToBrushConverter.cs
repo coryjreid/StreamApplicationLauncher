@@ -6,16 +6,19 @@ using StreamApplicationLauncher.Models;
 namespace StreamApplicationLauncher.Converters;
 
 public class LogLevelToBrushConverter : IValueConverter {
-    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
         return value switch {
-            LogLevel.Info => Brushes.Green,
-            LogLevel.Warning => Brushes.Orange,
-            LogLevel.Error => Brushes.Red,
+            LogLevel.Trace => Brushes.LightSlateGray,
             LogLevel.Debug => Brushes.Gray,
-            _ => Brushes.Black
+            LogLevel.Info => Brushes.LightGray,
+            LogLevel.Warning => Brushes.DarkOrange,
+            LogLevel.Error => Brushes.Red,
+            LogLevel.Critical => Brushes.DarkRed,
+            _ => Brushes.White
         };
     }
 
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
-        throw new NotImplementedException();
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) {
+        return Binding.DoNothing;
+    }
 }

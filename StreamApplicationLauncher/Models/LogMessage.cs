@@ -1,10 +1,12 @@
 ﻿namespace StreamApplicationLauncher.Models;
 
 public enum LogLevel {
+    Trace,
+    Debug,
     Info,
     Warning,
     Error,
-    Debug
+    Critical
 }
 
 public class LogMessage {
