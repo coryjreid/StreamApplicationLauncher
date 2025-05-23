@@ -11,6 +11,16 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel, IsDesignTimeCreatable=True}"
         Title="MainWindow" Height="450" Width="800">
+    
+    <Window.Resources>
+        <Style x:Key="ListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+    </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -21,7 +31,8 @@
         <!-- ListBox in top row, fills available space -->
         <ListBox Grid.Row="0"
                  ItemsSource="{Binding LogMessages}"
-                 Margin="10"
+                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+                 SnapsToDevicePixels="True"
                  HorizontalContentAlignment="Stretch"
                  ScrollViewer.CanContentScroll="True"
                  VirtualizingStackPanel.IsVirtualizing="True"
@@ -39,9 +50,10 @@
 
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:LogMessage}">
-                    <Grid Margin="0,2"
+                    <Grid HorizontalAlignment="Stretch"
                           Background="{Binding Level, Converter={conv:LogLevelToBackgroundBrush}}"
-                          HorizontalAlignment="Stretch">
+                          SnapsToDevicePixels="True"
+                          MinHeight="25">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" /> <!-- Timestamp -->
                             <ColumnDefinition Width="70" />   <!-- Fixed-width Log Level Block -->
