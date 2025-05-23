@@ -9,13 +9,12 @@ public class LogManager {
     private readonly DispatcherTimer _timer;
 
     public ObservableCollection<LogMessage> LogMessages { get; } = [];
-    public Action? ScrollToBottomRequest { get; set; }
 
     public LogManager() {
         _timer = new DispatcherTimer {
             Interval = TimeSpan.FromMilliseconds(100)
         };
-        _timer.Tick += OnTimerTick;
+        _timer.Tick += (_, _) => FlushQueue();
         _timer.Start();
     }
 
@@ -27,9 +26,10 @@ public class LogManager {
         });
     }
 
-    private void OnTimerTick(object? sender, EventArgs e) {
-        while (_logQueue.TryDequeue(out LogMessage? logMessage)) {
-            LogMessages.Add(logMessage);
+    // ✅ Testable flush method
+    public void FlushQueue() {
+        while (_logQueue.TryDequeue(out LogMessage? log)) {
+            LogMessages.Add(log);
         }
     }
 
@@ -40,13 +40,9 @@ public class LogManager {
 
             while (true) {
                 LogLevel level = levels[random.Next(levels.Length)];
-                EnqueueLog(level, $"Simulated {level} log from thread {Environment.CurrentManagedThreadId}");
+                EnqueueLog(level, $"Simulated {level} log");
                 await Task.Delay(500);
             }
         });
-    }
-
-    public void RequestScrollToBottom() {
-        ScrollToBottomRequest?.Invoke();
     }
 }

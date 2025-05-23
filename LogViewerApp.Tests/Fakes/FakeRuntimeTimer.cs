@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Threading;
+using LogViewerApp.Models;
 
-namespace LogViewerApp.Models;
+namespace LogViewerApp.Tests.Fakes;
 
-public class RuntimeTimer : IRuntimeTimer {
-    private readonly DispatcherTimer _timer;
-    private readonly DateTime _startTime;
+public class FakeRuntimeTimer : IRuntimeTimer {
+    private int _seconds = 0;
     private string _durationText = "00:00:00";
 
     public string DurationText {
@@ -19,19 +18,9 @@ public class RuntimeTimer : IRuntimeTimer {
         }
     }
 
-    public RuntimeTimer() {
-        _startTime = DateTime.Now;
-
-        _timer = new DispatcherTimer {
-            Interval = TimeSpan.FromSeconds(1)
-        };
-        _timer.Tick += (_, _) => Tick();
-        _timer.Start();
-    }
-
     public void Tick() {
-        TimeSpan elapsed = DateTime.Now - _startTime;
-        DurationText = elapsed.ToString(@"hh\:mm\:ss");
+        _seconds++;
+        DurationText = TimeSpan.FromSeconds(_seconds).ToString(@"hh\:mm\:ss");
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

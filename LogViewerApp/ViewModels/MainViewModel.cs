@@ -14,16 +14,18 @@ public class MainViewModel : INotifyPropertyChanged {
     public ICommand ScrollToBottomCommand { get; }
     public string DurationText => _runtimeTimer.DurationText;
     private readonly LogManager _logManager;
-    private readonly RuntimeTimer _runtimeTimer;
+    private readonly IRuntimeTimer _runtimeTimer;
 
     // Design-time constructor
-    public MainViewModel() : this(new DesignTimeLogManager()) {
+    public MainViewModel() : this(new DesignTimeLogManager(), new RuntimeTimer()) {
     }
 
+
     // Runtime constructor
-    public MainViewModel(LogManager logManager) {
+    public MainViewModel(LogManager logManager, IRuntimeTimer runtimeTimer) {
         _logManager = logManager;
-        _runtimeTimer = new RuntimeTimer();
+        _runtimeTimer = runtimeTimer;
+
         LogMessages = logManager.LogMessages;
         ScrollToBottomCommand = new RelayCommand(ExecuteScrollToBottom, CanScrollToBottom);
         ScrollState.PropertyChanged += (_, _) => { (ScrollToBottomCommand as RelayCommand)?.RaiseCanExecuteChanged(); };

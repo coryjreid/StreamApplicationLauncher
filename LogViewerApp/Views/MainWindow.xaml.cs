@@ -8,7 +8,8 @@ namespace LogViewerApp.Views {
             InitializeComponent();
 
             LogManager logManager = new();
-            MainViewModel viewModel = new(logManager);
+            RuntimeTimer runtimeTimer = new();
+            MainViewModel viewModel = new(logManager, runtimeTimer);
             DataContext = viewModel;
 
             logManager.StartSimulatedLogging();
