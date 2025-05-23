@@ -34,6 +34,8 @@
                  ItemContainerStyle="{StaticResource ListBoxItemStyle}"
                  SnapsToDevicePixels="True"
                  HorizontalContentAlignment="Stretch"
+                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.CanContentScroll="True"
                  VirtualizingStackPanel.IsVirtualizing="True"
                  VirtualizingStackPanel.VirtualizationMode="Standard">
