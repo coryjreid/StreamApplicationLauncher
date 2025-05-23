@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# 
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamApplicationLauncher", "StreamApplicationLauncher\StreamApplicationLauncher.csproj", "{3BBC70AD-84BD-4F15-B689-892F62276847}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamApplicationLauncher.Tests", "StreamApplicationLauncher.Tests\StreamApplicationLauncher.Tests.csproj", "{BBF42C70-5186-46DB-908E-3F1C36C5572A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3BBC70AD-84BD-4F15-B689-892F62276847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BBC70AD-84BD-4F15-B689-892F62276847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BBC70AD-84BD-4F15-B689-892F62276847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BBC70AD-84BD-4F15-B689-892F62276847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBF42C70-5186-46DB-908E-3F1C36C5572A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBF42C70-5186-46DB-908E-3F1C36C5572A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBF42C70-5186-46DB-908E-3F1C36C5572A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBF42C70-5186-46DB-908E-3F1C36C5572A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
