@@ -12,10 +12,12 @@ public class RuntimeTimer : IRuntimeTimer {
     public string DurationText {
         get => _durationText;
         private set {
-            if (_durationText != value) {
-                _durationText = value;
-                OnPropertyChanged();
+            if (_durationText == value) {
+                return;
             }
+
+            _durationText = value;
+            OnPropertyChanged();
         }
     }
 
@@ -36,7 +38,7 @@ public class RuntimeTimer : IRuntimeTimer {
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected void OnPropertyChanged([CallerMemberName] string? name = null) {
+    private void OnPropertyChanged([CallerMemberName] string? name = null) {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

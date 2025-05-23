@@ -8,7 +8,7 @@ using StreamApplicationLauncher.ViewModels;
 namespace StreamApplicationLauncher.Behaviors;
 
 public class AutoScrollBehavior : Behavior<ListBox> {
-    private bool _userScrolled = false;
+    private bool _userScrolled;
 
     public static readonly DependencyProperty ScrollStateProperty =
         DependencyProperty.Register(nameof(ScrollState), typeof(ScrollState), typeof(AutoScrollBehavior),
@@ -40,27 +40,31 @@ public class AutoScrollBehavior : Behavior<ListBox> {
     }
 
     private static void OnScrollStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-        if (d is AutoScrollBehavior behavior) {
-            if (e.OldValue is ScrollState oldState) {
-                oldState.PropertyChanged -= behavior.OnScrollStatePropertyChanged;
-            }
+        if (d is not AutoScrollBehavior behavior) {
+            return;
+        }
 
-            if (e.NewValue is ScrollState newState) {
-                newState.PropertyChanged += behavior.OnScrollStatePropertyChanged;
-            }
+        if (e.OldValue is ScrollState oldState) {
+            oldState.PropertyChanged -= behavior.OnScrollStatePropertyChanged;
+        }
+
+        if (e.NewValue is ScrollState newState) {
+            newState.PropertyChanged += behavior.OnScrollStatePropertyChanged;
         }
     }
 
     private void OnScrollStatePropertyChanged(object? sender, PropertyChangedEventArgs e) {
-        if (e.PropertyName == nameof(ScrollState.IsScrollRequested) && ScrollState?.IsScrollRequested == true) {
-            _userScrolled = false;
-            if (AssociatedObject.Items.Count > 0) {
-                AssociatedObject.ScrollIntoView(AssociatedObject.Items[^1]);
-            }
-
-            // Reset request
-            ScrollState.IsScrollRequested = false;
+        if (e.PropertyName != nameof(ScrollState.IsScrollRequested) || ScrollState?.IsScrollRequested != true) {
+            return;
         }
+
+        _userScrolled = false;
+        if (AssociatedObject.Items.Count > 0) {
+            AssociatedObject.ScrollIntoView(AssociatedObject.Items[^1]);
+        }
+
+        // Reset request
+        ScrollState.IsScrollRequested = false;
     }
 
     private void OnScrollChanged(object sender, ScrollChangedEventArgs e) {

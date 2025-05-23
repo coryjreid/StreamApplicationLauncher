@@ -8,11 +8,11 @@ namespace StreamApplicationLauncher.Converters;
 
 [MarkupExtensionReturnType(typeof(Brush))]
 public class LogLevelToBrushExtension : MarkupExtension, IValueConverter {
-    private static readonly LogLevelToBrushExtension _instance = new();
+    private static readonly LogLevelToBrushExtension Instance = new();
 
-    public override object ProvideValue(IServiceProvider serviceProvider) => _instance;
+    public override object ProvideValue(IServiceProvider serviceProvider) => Instance;
 
-    public object? Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
         return value switch {
             LogLevel.Trace => Brushes.LightSlateGray,
             LogLevel.Debug => Brushes.Gray,
@@ -24,6 +24,6 @@ public class LogLevelToBrushExtension : MarkupExtension, IValueConverter {
         };
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         => Binding.DoNothing;
 }

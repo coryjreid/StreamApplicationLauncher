@@ -19,11 +19,7 @@ public class LogManager {
     }
 
     public void EnqueueLog(LogLevel level, string message) {
-        _logQueue.Enqueue(new LogMessage {
-            Timestamp = DateTime.Now,
-            Level = level,
-            Message = message
-        });
+        _logQueue.Enqueue(new LogMessage(level, message));
     }
 
     // ✅ Testable flush method

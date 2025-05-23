@@ -5,15 +5,17 @@ namespace StreamApplicationLauncher.ViewModels;
 
 public class ScrollState : INotifyPropertyChanged {
     private bool _isAtBottom = true;
-    private bool _isScrollRequested = false;
+    private bool _isScrollRequested;
 
     public bool IsAtBottom {
         get => _isAtBottom;
         set {
-            if (_isAtBottom != value) {
-                _isAtBottom = value;
-                OnPropertyChanged();
+            if (_isAtBottom == value) {
+                return;
             }
+
+            _isAtBottom = value;
+            OnPropertyChanged();
         }
     }
 
@@ -29,7 +31,7 @@ public class ScrollState : INotifyPropertyChanged {
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected void OnPropertyChanged([CallerMemberName] string? name = null) {
+    private void OnPropertyChanged([CallerMemberName] string? name = null) {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
