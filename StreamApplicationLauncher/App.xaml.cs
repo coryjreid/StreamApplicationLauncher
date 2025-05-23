@@ -14,15 +14,12 @@ public partial class App {
 
         LogManager logManager = new();
 
-        if (e.Args.Length > 0) {
-            string configPath = e.Args[0];
-            Launcher.Launcher launcher = new(logManager, configPath);
-            launcher.Run();
-        }
-
         MainWindow mainWindow = new() {
             DataContext = new MainViewModel(logManager, new RuntimeTimer())
         };
         mainWindow.Show();
+
+        Launcher.Launcher launcher = new(logManager, e.Args[0]);
+        Task.Run(() => launcher.Run());
     }
 }

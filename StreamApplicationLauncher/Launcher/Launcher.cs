@@ -7,6 +7,7 @@ namespace StreamApplicationLauncher.Launcher;
 
 public class Launcher {
     private readonly LogManager _logManager;
+    private readonly List<Program>? _programs;
 
     public Launcher(LogManager logManager, string configPath) {
         _logManager = logManager;
@@ -18,15 +19,16 @@ public class Launcher {
 
         try {
             string json = File.ReadAllText(configPath);
-            // Replace with real deserialization logic as needed
-            List<Program>? programs = JsonSerializer.Deserialize<List<Program>>(json, Constants.DefaultJsonSerializerOptions);
-            _logManager.Log(LogLevel.Info, $"Loaded config: {json.Length} characters");
+            _programs = JsonSerializer.Deserialize<List<Program>>(json, Constants.DefaultJsonSerializerOptions);
         } catch (Exception ex) {
-            _logManager.Log(LogLevel.Critical, $"Failed to load config: {ex.Message}");
+            _logManager.Log(LogLevel.Critical, $"Failed to load programs file: {ex.Message}");
         }
     }
 
     public void Run() {
-        _logManager.Log(LogLevel.Info, "The Run() method was called.");
+        Thread.Sleep(2000);
+        _logManager.Log(LogLevel.Info,
+            $"Loaded {_programs!.Count} {(_programs!.Count == 1 ? "program" : "programs")} for launch");
+        _logManager.Log(LogLevel.Info, "The Run() method was called");
     }
 }
