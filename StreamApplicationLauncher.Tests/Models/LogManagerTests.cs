@@ -7,7 +7,7 @@ public class LogManagerTests {
     [Fact]
     public void EnqueueLog_ThenFlushQueue_AddsToLogMessages() {
         LogManager manager = new();
-        manager.EnqueueLog(LogLevel.Warning, "Test log");
+        manager.Log(LogLevel.Warning, "Test log");
 
         manager.FlushQueue();
 

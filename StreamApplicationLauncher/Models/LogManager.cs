@@ -18,7 +18,7 @@ public class LogManager {
         _timer.Start();
     }
 
-    public void EnqueueLog(LogLevel level, string message) {
+    public void Log(LogLevel level, string message) {
         _logQueue.Enqueue(new LogMessage(level, message));
     }
 
@@ -29,14 +29,14 @@ public class LogManager {
         }
     }
 
-    public void StartSimulatedLogging() {
+    protected void StartSimulatedLogging() {
         Task.Run(async () => {
             Random random = new();
             LogLevel[] levels = (LogLevel[])Enum.GetValues(typeof(LogLevel));
 
             while (true) {
                 LogLevel level = levels[random.Next(levels.Length)];
-                EnqueueLog(level, $"Simulated {level} log");
+                Log(level, $"Simulated {level} log");
                 await Task.Delay(500);
             }
         });
