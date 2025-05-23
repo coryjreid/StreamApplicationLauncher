@@ -16,14 +16,22 @@
     </Window.Resources>
 
     <Grid>
-        <ListBox ItemsSource="{Binding LogMessages}"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ListBox in top row, fills available space -->
+        <ListBox x:Name="LogListBox"
+                 Grid.Row="0"
+                 ItemsSource="{Binding LogMessages}"
                  Margin="10"
                  ScrollViewer.CanContentScroll="True"
                  VirtualizingStackPanel.IsVirtualizing="True"
                  VirtualizingStackPanel.VirtualizationMode="Standard">
 
             <b:Interaction.Behaviors>
-                <behaviors:AutoScrollBehavior />
+                <behaviors:AutoScrollBehavior ScrollState="{Binding ScrollState}" />
             </b:Interaction.Behaviors>
 
             <ListBox.ItemsPanel>
@@ -39,5 +47,14 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <!-- Bottom row with right-aligned button -->
+        <Grid Grid.Row="1">
+            <Button Content="Scroll to Bottom"
+                    Command="{Binding ScrollToBottomCommand}"
+                    HorizontalAlignment="Right"
+                    Margin="10"
+                    Width="150" />
+        </Grid>
     </Grid>
 </Window>

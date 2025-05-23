@@ -2,21 +2,16 @@
 using LogViewerApp.Models;
 using LogViewerApp.ViewModels;
 
-namespace LogViewerApp.Views;
+namespace LogViewerApp.Views {
+    public partial class MainWindow : Window {
+        public MainWindow() {
+            InitializeComponent();
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class MainWindow : Window
-{
-    public MainWindow()
-    {
-        InitializeComponent();
+            LogManager logManager = new();
+            MainViewModel viewModel = new(logManager);
+            DataContext = viewModel;
 
-        LogManager logManager = new();
-        logManager.StartSimulatedLogging();
-
-        MainViewModel viewModel = new(logManager);
-        DataContext = viewModel;
+            logManager.StartSimulatedLogging();
+        }
     }
 }

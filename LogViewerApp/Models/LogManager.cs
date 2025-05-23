@@ -9,6 +9,7 @@ public class LogManager {
     private readonly DispatcherTimer _timer;
 
     public ObservableCollection<LogMessage> LogMessages { get; } = [];
+    public Action? ScrollToBottomRequest { get; set; }
 
     public LogManager() {
         _timer = new DispatcherTimer {
@@ -43,5 +44,9 @@ public class LogManager {
                 await Task.Delay(500);
             }
         });
+    }
+
+    public void RequestScrollToBottom() {
+        ScrollToBottomRequest?.Invoke();
     }
 }
