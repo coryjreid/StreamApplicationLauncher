@@ -8,7 +8,7 @@ public class LogManager {
     private readonly ConcurrentQueue<LogMessage> _logQueue = new();
     private readonly DispatcherTimer _timer;
 
-    public ObservableCollection<LogMessage> LogMessages { get; } = new();
+    public ObservableCollection<LogMessage> LogMessages { get; } = [];
 
     public LogManager() {
         _timer = new DispatcherTimer {
@@ -34,7 +34,7 @@ public class LogManager {
 
     public void StartSimulatedLogging() {
         Task.Run(async () => {
-            Random random = new Random();
+            Random random = new();
             LogLevel[] levels = (LogLevel[])Enum.GetValues(typeof(LogLevel));
 
             while (true) {

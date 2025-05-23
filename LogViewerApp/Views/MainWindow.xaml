@@ -14,7 +14,18 @@
     </Window.Resources>
 
     <Grid>
-        <ListBox ItemsSource="{Binding LogMessages}" Margin="10">
+        <ListBox ItemsSource="{Binding LogMessages}"
+                 Margin="10"
+                 ScrollViewer.CanContentScroll="True"
+                 VirtualizingStackPanel.IsVirtualizing="True"
+                 VirtualizingStackPanel.VirtualizationMode="Standard">
+
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding}"
