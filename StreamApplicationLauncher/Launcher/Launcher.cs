@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text.Json;
 using AutoIt;
+using StreamApplicationLauncher.Data;
 using StreamApplicationLauncher.Models;
 using StreamApplicationLauncher.Models.Json;
 
@@ -8,11 +9,13 @@ namespace StreamApplicationLauncher.Launcher;
 
 public class Launcher {
     private readonly LogManager _logManager;
+    private readonly PidSqliteDataService _pidSqlite;
     private readonly List<Program>? _programs;
     private const int WindowWaitTimeoutSeconds = 10;
 
-    public Launcher(LogManager logManager, string configPath) {
+    public Launcher(LogManager logManager, string configPath, PidSqliteDataService pidSqlite) {
         _logManager = logManager;
+        _pidSqlite = pidSqlite;
 
         if (!File.Exists(configPath)) {
             _logManager.Log(LogLevel.Critical, $"Config file not found: {configPath}");

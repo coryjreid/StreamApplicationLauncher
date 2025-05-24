@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
+using StreamApplicationLauncher.Data;
 using StreamApplicationLauncher.Models;
 using StreamApplicationLauncher.ViewModels;
 using StreamApplicationLauncher.Views;
@@ -12,14 +14,18 @@ public partial class App {
     protected override void OnStartup(StartupEventArgs e) {
         base.OnStartup(e);
 
-        LogManager logManager = new();
+        Directory.CreateDirectory(Constants.ApplicationStoragePath);
 
+        LogManager logManager = new();
         MainWindow mainWindow = new() {
             DataContext = new MainViewModel(logManager, new RuntimeTimer())
         };
         mainWindow.Show();
 
-        Launcher.Launcher launcher = new(logManager, e.Args[0]);
+        PidSqliteDataService pidSqlite = new();
+        pidSqlite.Initialize();
+
+        Launcher.Launcher launcher = new(logManager, e.Args[0], pidSqlite);
         Task.Run(() => launcher.Run());
     }
 }
