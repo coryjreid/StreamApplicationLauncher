@@ -60,7 +60,16 @@ public class Launcher {
 
             if (!skipWindowHandle) {
                 _logManager.Info($"Waiting for {programName}'s window to exist (up to {WindowWaitTimeoutSeconds} seconds)");
-                int windowHandle = AutoItX.WinWait(window.Title, null, WindowWaitTimeoutSeconds);
+                AutoItX.AutoItSetOption("WinTitleMatchMode", 4);
+                if (AutoItX.WinWait(window.Title, null, WindowWaitTimeoutSeconds) != 1) {
+                    _logManager.Warning($"Failed to detect the existence of {programName}'s window");
+                }
+
+                IntPtr windowHandle = AutoItX.WinGetHandle(window.Title);
+                if (windowHandle == 0) {
+                    _logManager.Error($"Failed to obtain handle to {programName}; Skipping window modification");
+                    continue;
+                }
                 _logManager.Info("Successfully obtained window handle");
 
                 if (window.HideOnOpen) {
