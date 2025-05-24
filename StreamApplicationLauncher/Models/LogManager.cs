@@ -22,6 +22,30 @@ public class LogManager {
         _logQueue.Enqueue(new LogMessage(level, message));
     }
 
+    public void Trace(string message) {
+        _logQueue.Enqueue(new LogMessage(LogLevel.Trace, message));
+    }
+
+    public void Info(string message) {
+        _logQueue.Enqueue(new LogMessage(LogLevel.Info, message));
+    }
+
+    public void Debug(string message) {
+        _logQueue.Enqueue(new LogMessage(LogLevel.Debug, message));
+    }
+
+    public void Warning(string message) {
+        _logQueue.Enqueue(new LogMessage(LogLevel.Warning, message));
+    }
+
+    public void Error(string message) {
+        _logQueue.Enqueue(new LogMessage(LogLevel.Error, message));
+    }
+
+    public void Critical(string message) {
+        _logQueue.Enqueue(new LogMessage(LogLevel.Critical, message));
+    }
+
     // ✅ Testable flush method
     public void FlushQueue() {
         while (_logQueue.TryDequeue(out LogMessage? log)) {

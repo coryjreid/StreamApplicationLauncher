@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
+using AutoIt;
 using StreamApplicationLauncher.Models;
 using StreamApplicationLauncher.Models.Json;
 
@@ -27,8 +28,18 @@ public class Launcher {
 
     public void Run() {
         Thread.Sleep(2000);
-        _logManager.Log(LogLevel.Info,
-            $"Loaded {_programs!.Count} {(_programs!.Count == 1 ? "program" : "programs")} for launch");
-        _logManager.Log(LogLevel.Info, "The Run() method was called");
+        _logManager.Info($"Loaded {_programs!.Count} {(_programs!.Count == 1 ? "program" : "programs")} for launch");
+        _logManager.Info("The Run() method was called");
+
+        int programsCount = _programs.Count;
+        int currentProgram = 0;
+        foreach (Program program in _programs) {
+            _logManager.Info($"({++currentProgram}/{programsCount}) Starting application {program.Name}");
+            int result = AutoItX.Run(program.Process.ExecutablePath, program.Process.WorkingDirectory);
+            int errorCode = AutoItX.ErrorCode();
+            if (result == 1 || errorCode == 1) {
+                _logManager.Critical($"Application {program.Name} failed to start");
+            }
+        }
     }
 }
