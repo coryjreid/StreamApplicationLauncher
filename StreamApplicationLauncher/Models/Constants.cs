@@ -15,4 +15,6 @@ public static class Constants {
         "StreamApplicationLauncher");
 
     public static readonly string PidDatabaseFileName = "pids.db";
+
+    public static readonly int ApplicationAutoShutdownDelaySeconds = 10;
 }

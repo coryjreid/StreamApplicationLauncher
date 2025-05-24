@@ -26,6 +26,12 @@ public partial class App {
         pidSqlite.Initialize();
 
         Launcher.Launcher launcher = new(logManager, e.Args[0], pidSqlite);
-        Task.Run(() => launcher.Run());
+        Task.Run(() => {
+            launcher.Run();
+            logManager.Info($"Complete; Automatically shutting down in {Constants.ApplicationAutoShutdownDelaySeconds} seconds");
+            Thread.Sleep(Constants.ApplicationAutoShutdownDelaySeconds * 1000);
+            logManager.Info("Shutting down now");
+            Current.Dispatcher.Invoke(() => Current.Shutdown());
+        });
     }
 }
