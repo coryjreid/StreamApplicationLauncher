@@ -2,9 +2,9 @@
 
 namespace StreamApplicationLauncher.Models.Json;
 
-public record Program(
+public record ApplicationLaunch(
     [property: JsonPropertyName("name")]
-    string Name,
+    string LaunchName,
     [property: JsonPropertyName("process")]
     Process Process,
     [property: JsonPropertyName("window")]

@@ -28,9 +28,14 @@ public partial class App {
         Launcher.Launcher launcher = new(logManager, e.Args[0], pidSqlite);
         Task.Run(() => {
             launcher.Run();
-            logManager.Info($"Complete; Automatically shutting down in {Constants.ApplicationAutoShutdownDelaySeconds} seconds");
-            Thread.Sleep(Constants.ApplicationAutoShutdownDelaySeconds * 1000);
-            logManager.Info("Shutting down now");
+            logManager.Info($"Application launch complete; Automatically shutting down");
+
+            for (int seconds = Constants.ApplicationAutoShutdownDelaySeconds; seconds > 0; seconds--) {
+                logManager.Info($"Shutdown in {seconds} second{(seconds != 1 ? "s" : "")}");
+                Thread.Sleep(1000);
+            }
+
+            logManager.Info("Goodbye");
             Current.Dispatcher.Invoke(() => Current.Shutdown());
         });
     }

@@ -3,9 +3,27 @@
 namespace StreamApplicationLauncher.Models.Json;
 
 public record Window(
-    [property: JsonPropertyName("closeOnOpen")]
-    bool CloseOnOpen,
-    [property: JsonPropertyName("hideOnOpen")]
-    bool HideOnOpen,
     [property: JsonPropertyName("title")]
-    string Title);
+    string Title,
+    [property: JsonPropertyName("existence")]
+    WindowExistence Existence,
+    [property: JsonPropertyName("onOpen")]
+    WindowOnOpen OnOpen);
+public record WindowExistence(
+    [property: JsonPropertyName("waitExists")]
+    bool WaitExists,
+    [property: JsonPropertyName("waitTimeoutSeconds")]
+    int WaitTimeoutSeconds);
+
+public record WindowOnOpen(
+    [property: JsonPropertyName("action")]
+    Action Action,
+    [property: JsonPropertyName("delaySeconds")]
+    int ActionDelaySeconds);
+
+public enum Action {
+    Close,
+    Hide,
+    Minimize,
+    None
+}
