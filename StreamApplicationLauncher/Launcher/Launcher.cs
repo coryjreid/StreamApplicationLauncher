@@ -111,6 +111,12 @@ public class Launcher {
                 }
 
                 _logManager.Info($"Obtained \"{applicationLaunchName}\" window handle");
+                if (window.OnOpen.ActionDelaySeconds > 0 && window.OnOpen.Action != Action.None) {
+                    _logManager.Info($"Control window for \"{applicationLaunchName}\" waiting {window.OnOpen.ActionDelaySeconds} "
+                                     + $"{(window.OnOpen.ActionDelaySeconds == 1 ? "second" : "seconds")} for initialization");
+                    Thread.Sleep(1000 * window.OnOpen.ActionDelaySeconds);
+                }
+
                 switch (window.OnOpen.Action) {
                     case Action.Close:
                         if (AutoItX.WinClose(window.Title) == 1) {
