@@ -10,9 +10,11 @@
         xmlns:models="clr-namespace:StreamApplicationLauncher.Models"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel, IsDesignTimeCreatable=True}"
-        WindowStartupLocation="CenterScreen"
         Topmost="True"
-        Title="MainWindow" Height="450" Width="800">
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="ToolWindow"
+        ShowInTaskbar="False"
+        Title="Stream Application Launcher" Height="450" Width="800">
 
     <Window.Resources>
         <Style x:Key="ListBoxItemStyle" TargetType="ListBoxItem">
