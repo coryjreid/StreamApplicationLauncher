@@ -8,5 +8,7 @@ public record ApplicationLaunch(
     [property: JsonPropertyName("process")]
     Process Process,
     [property: JsonPropertyName("window")]
-    Window Window
+    Window Window,
+    [property: JsonPropertyName("postLaunchScripts")]
+    List<AutoItScript> PostLaunchScripts
 );

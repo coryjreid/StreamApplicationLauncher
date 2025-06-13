@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Windows;
 using AutoIt;
+using Microsoft.Win32;
 using StreamApplicationLauncher.Data;
 using StreamApplicationLauncher.Models;
 using StreamApplicationLauncher.Models.Json;
@@ -64,7 +65,8 @@ public class Launcher {
 
         int programsCount = _applicationLaunchList.Count;
         int currentProgram = 0;
-        foreach ((string applicationLaunchName, Process process, Window window) in _applicationLaunchList) {
+        foreach ((string applicationLaunchName, Process process, Window window, List<AutoItScript> postLaunchScripts) in
+                 _applicationLaunchList) {
             bool skipWindowHandle = window.OnOpen.Action == Action.None;
             if (!skipWindowHandle && string.IsNullOrWhiteSpace(window.Title)) {
                 _logManager.Critical($"Launch \"{applicationLaunchName}\" defines "
@@ -78,9 +80,16 @@ public class Launcher {
             int pid;
             if (process.Existence.WaitExists) {
                 _ = RunProcess(process);
-                pid = AutoItX.ProcessWait(process.Name, process.Existence.WaitTimeoutSeconds);
+
+                int waitResult = AutoItX.ProcessWait(process.Name, process.Existence.WaitTimeoutSeconds);
+                if (waitResult == 0) {
+                    _logManager.Critical($"Failed locating \"{process.Name}\" process; Aborting");
+                    return;
+                }
+
+                pid = AutoItX.ProcessExists(process.Name);
             } else {
-                pid = AutoItX.Run(process.Executable, process.WorkingDirectory);
+                pid = RunProcess(process);
             }
 
             int autoItXErrorCode = AutoItX.ErrorCode();
@@ -89,6 +98,8 @@ public class Launcher {
                                      + $"(AutoItX Error = {autoItXErrorCode}); Aborting");
                 return;
             }
+
+            _logManager.Info($"\"{applicationLaunchName}\" started; PID={pid}");
 
             if (!skipWindowHandle) {
                 string waitTimeString = window.OnOpen.ActionDelaySeconds switch {
@@ -148,8 +159,103 @@ public class Launcher {
                 }
             }
 
+            int numberOfScripts = postLaunchScripts.Count;
+            if (numberOfScripts != 0) {
+                _logManager.Info($"Launch \"{applicationLaunchName}\" has {numberOfScripts} post-launch "
+                                 + $"script{(numberOfScripts == 1 ? "" : "s")} to execute");
+                
+                const int currentScriptNumber = 1;
+                foreach ((string? scriptPath, bool isRunWait) in postLaunchScripts) {
+                    try {
+                        if (string.IsNullOrWhiteSpace(scriptPath)) {
+                            _logManager.Error($"Cannot run \"{applicationLaunchName}\" script "
+                                              + $"{currentScriptNumber}/{numberOfScripts} as no path is provided; Continuing");
+                            continue;
+                        }
+                        
+                        _logManager.Info($"Running \"{applicationLaunchName}\" post-launch script "
+                                         + $"{currentScriptNumber}/{numberOfScripts}"
+                                         + (isRunWait ? ", and waiting for its completion" : ""));
+                        
+                        string autoItExe = GetAutoItExePath2(Environment.Is64BitProcess);
+                        string invocationString = $"\"{autoItExe}\" /ErrorStdOut \"{scriptPath}\"";
+                        int runWaitExitCode = 0;
+                        int scriptPid = 0;
+                        if (isRunWait) {
+                            runWaitExitCode = AutoItX.RunWait(invocationString, null);
+                        } else {
+                            scriptPid = AutoItX.Run(invocationString, null);
+                        }
+
+                        int scriptAutoItXErrorCode = AutoItX.ErrorCode();
+                        if ((scriptPid == 0 && !isRunWait) || runWaitExitCode != 0 || scriptAutoItXErrorCode != 0) {
+                            _logManager.Critical($"\"{applicationLaunchName}\" script "
+                                                 + $"{currentScriptNumber}/{numberOfScripts} failed "
+                                                 + $"(ScriptPid = {scriptPid}, RunWaitExitCode = {runWaitExitCode}, "
+                                                 + $"AutoItX Error = {scriptAutoItXErrorCode}); Aborting");
+                            return;
+                        }
+                        
+                        _logManager.Info($"Successfully ran \"{applicationLaunchName}\" post-launch script "
+                                         + $"{currentScriptNumber}/{numberOfScripts}");
+                    } catch (Exception exception) when (exception is InvalidOperationException or FileNotFoundException) {
+                        _logManager.Critical($"Failed locating AutoIt executable: {exception.Message}; Aborting");
+                        return;
+                    }
+                }
+            }
+
             _logManager.Info($"Launch \"{applicationLaunchName}\" successful");
         }
+    }
+
+    private static string GetAutoItExePath2(bool x64) {
+        string? exePath = TryGetAutoItExeFromRegistry(x64 ? RegistryView.Registry64 : RegistryView.Registry32);
+
+        if (exePath == null && x64) {
+            exePath = TryGetAutoItExeFromRegistry(RegistryView.Registry32); // fallback to 32-bit install
+        }
+
+        exePath ??= TryFindPortableAutoIt();
+        if (exePath == null) {
+            throw new InvalidOperationException("Could not locate AutoIt3 executable in registry or known folders.");
+        }
+
+        return exePath;
+    }
+
+    private static string? TryGetAutoItExeFromRegistry(RegistryView view) {
+        const string keyPath = @"SOFTWARE\AutoIt v3\AutoIt";
+        const string valueName = "InstallDir";
+
+        using RegistryKey baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, view);
+        using RegistryKey? autoItKey = baseKey.OpenSubKey(keyPath);
+        if (autoItKey == null) {
+            return null;
+        }
+
+        string? installDir = autoItKey.GetValue(valueName) as string;
+        if (string.IsNullOrWhiteSpace(installDir)) {
+            return null;
+        }
+
+        string exeName = view == RegistryView.Registry64 ? "AutoIt3_x64.exe" : "AutoIt3.exe";
+        string exePath = Path.Combine(installDir, exeName);
+
+        return File.Exists(exePath) ? exePath : null;
+    }
+
+    private static string? TryFindPortableAutoIt() {
+        string baseDir = AppContext.BaseDirectory;
+
+        string[] candidates = [
+            Path.Combine(baseDir, "AutoIt3_x64.exe"),
+            Path.Combine(baseDir, "AutoIt3.exe"),
+            Path.Combine(baseDir, "tools", "autoit", "AutoIt3_x64.exe"),
+            Path.Combine(baseDir, "tools", "autoit", "AutoIt3.exe")
+        ];
+
+        return candidates.FirstOrDefault(File.Exists);
     }
 
     private static int RunProcess(Process process) {
