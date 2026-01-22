@@ -128,6 +128,52 @@ public class Launcher {
                     Thread.Sleep(1000 * window.OnOpen.ActionDelaySeconds);
                 }
 
+                int numberOfScripts = postLaunchScripts.Count;
+                if (numberOfScripts != 0) {
+                    _logManager.Info($"Launch \"{applicationLaunchName}\" has {numberOfScripts} post-launch "
+                                     + $"script{(numberOfScripts == 1 ? "" : "s")} to execute");
+
+                    const int currentScriptNumber = 1;
+                    foreach ((string? scriptPath, bool isRunWait) in postLaunchScripts) {
+                        try {
+                            if (string.IsNullOrWhiteSpace(scriptPath)) {
+                                _logManager.Error($"Cannot run \"{applicationLaunchName}\" script "
+                                                  + $"{currentScriptNumber}/{numberOfScripts} as no path is provided; Continuing");
+                                continue;
+                            }
+
+                            _logManager.Info($"Running \"{applicationLaunchName}\" post-launch script "
+                                             + $"{currentScriptNumber}/{numberOfScripts}"
+                                             + (isRunWait ? ", and waiting for its completion" : ""));
+
+                            string autoItExe = GetAutoItExePath2(Environment.Is64BitProcess);
+                            string invocationString = $"\"{autoItExe}\" /ErrorStdOut \"{scriptPath}\"";
+                            int runWaitExitCode = 0;
+                            int scriptPid = 0;
+                            if (isRunWait) {
+                                runWaitExitCode = AutoItX.RunWait(invocationString, null);
+                            } else {
+                                scriptPid = AutoItX.Run(invocationString, null);
+                            }
+
+                            int scriptAutoItXErrorCode = AutoItX.ErrorCode();
+                            if ((scriptPid == 0 && !isRunWait) || runWaitExitCode != 0 || scriptAutoItXErrorCode != 0) {
+                                _logManager.Critical($"\"{applicationLaunchName}\" script "
+                                                     + $"{currentScriptNumber}/{numberOfScripts} failed "
+                                                     + $"(ScriptPid = {scriptPid}, RunWaitExitCode = {runWaitExitCode}, "
+                                                     + $"AutoItX Error = {scriptAutoItXErrorCode}); Aborting");
+                                return;
+                            }
+
+                            _logManager.Info($"Successfully ran \"{applicationLaunchName}\" post-launch script "
+                                             + $"{currentScriptNumber}/{numberOfScripts}");
+                        } catch (Exception exception) when (exception is InvalidOperationException or FileNotFoundException) {
+                            _logManager.Critical($"Failed locating AutoIt executable: {exception.Message}; Aborting");
+                            return;
+                        }
+                    }
+                }
+
                 switch (window.OnOpen.Action) {
                     case Action.Close:
                         if (AutoItX.WinClose(window.Title) == 1) {
@@ -159,51 +205,6 @@ public class Launcher {
                 }
             }
 
-            int numberOfScripts = postLaunchScripts.Count;
-            if (numberOfScripts != 0) {
-                _logManager.Info($"Launch \"{applicationLaunchName}\" has {numberOfScripts} post-launch "
-                                 + $"script{(numberOfScripts == 1 ? "" : "s")} to execute");
-                
-                const int currentScriptNumber = 1;
-                foreach ((string? scriptPath, bool isRunWait) in postLaunchScripts) {
-                    try {
-                        if (string.IsNullOrWhiteSpace(scriptPath)) {
-                            _logManager.Error($"Cannot run \"{applicationLaunchName}\" script "
-                                              + $"{currentScriptNumber}/{numberOfScripts} as no path is provided; Continuing");
-                            continue;
-                        }
-                        
-                        _logManager.Info($"Running \"{applicationLaunchName}\" post-launch script "
-                                         + $"{currentScriptNumber}/{numberOfScripts}"
-                                         + (isRunWait ? ", and waiting for its completion" : ""));
-                        
-                        string autoItExe = GetAutoItExePath2(Environment.Is64BitProcess);
-                        string invocationString = $"\"{autoItExe}\" /ErrorStdOut \"{scriptPath}\"";
-                        int runWaitExitCode = 0;
-                        int scriptPid = 0;
-                        if (isRunWait) {
-                            runWaitExitCode = AutoItX.RunWait(invocationString, null);
-                        } else {
-                            scriptPid = AutoItX.Run(invocationString, null);
-                        }
-
-                        int scriptAutoItXErrorCode = AutoItX.ErrorCode();
-                        if ((scriptPid == 0 && !isRunWait) || runWaitExitCode != 0 || scriptAutoItXErrorCode != 0) {
-                            _logManager.Critical($"\"{applicationLaunchName}\" script "
-                                                 + $"{currentScriptNumber}/{numberOfScripts} failed "
-                                                 + $"(ScriptPid = {scriptPid}, RunWaitExitCode = {runWaitExitCode}, "
-                                                 + $"AutoItX Error = {scriptAutoItXErrorCode}); Aborting");
-                            return;
-                        }
-                        
-                        _logManager.Info($"Successfully ran \"{applicationLaunchName}\" post-launch script "
-                                         + $"{currentScriptNumber}/{numberOfScripts}");
-                    } catch (Exception exception) when (exception is InvalidOperationException or FileNotFoundException) {
-                        _logManager.Critical($"Failed locating AutoIt executable: {exception.Message}; Aborting");
-                        return;
-                    }
-                }
-            }
 
             _logManager.Info($"Launch \"{applicationLaunchName}\" successful");
         }
