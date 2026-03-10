@@ -21,4 +21,8 @@ public static class Constants {
     public const string PidDatabaseFileName = "pids.db";
 
     public const int ApplicationAutoShutdownDelaySeconds = 10;
+
+    // OBS needs time to stop outputs, finalize recordings, and tear down browser sources.
+    // 30 seconds covers worst-case graceful shutdown before force-killing stragglers.
+    public const int CleanupGracefulWaitSeconds = 30;
 }

@@ -65,8 +65,8 @@ public class Launcher {
 
         int programsCount = _applicationLaunchList.Count;
         int currentProgram = 0;
-        foreach ((string applicationLaunchName, Process process, Window window, List<AutoItScript> postLaunchScripts) in
-                 _applicationLaunchList) {
+        foreach ((string applicationLaunchName, Process process, Window window, List<AutoItScript> postLaunchScripts,
+                     Cleanup? cleanup) in _applicationLaunchList) {
             bool skipWindowHandle = window.OnOpen.Action == Action.None;
             if (!skipWindowHandle && string.IsNullOrWhiteSpace(window.Title)) {
                 _logManager.Critical($"Launch \"{applicationLaunchName}\" defines "
@@ -100,6 +100,7 @@ public class Launcher {
             }
 
             _logManager.Info($"\"{applicationLaunchName}\" started; PID={pid}");
+            _pidSqlite.AddPid(pid, process.Name, cleanup?.ForceKill ?? false);
 
             if (!skipWindowHandle) {
                 string waitTimeString = window.OnOpen.ActionDelaySeconds switch {

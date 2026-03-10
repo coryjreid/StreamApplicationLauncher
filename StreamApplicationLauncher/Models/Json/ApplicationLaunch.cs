@@ -10,5 +10,7 @@ public record ApplicationLaunch(
     [property: JsonPropertyName("window")]
     Window Window,
     [property: JsonPropertyName("postLaunchScripts")]
-    List<AutoItScript> PostLaunchScripts
+    List<AutoItScript> PostLaunchScripts,
+    [property: JsonPropertyName("cleanup")]
+    Cleanup? Cleanup = null
 );
